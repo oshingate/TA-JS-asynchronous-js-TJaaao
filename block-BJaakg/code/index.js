@@ -3,6 +3,18 @@ let root2 = document.querySelector('.root2');
 let mainSec = document.querySelector('.main-sec');
 let secSec = document.querySelector('.sec-sec');
 
+// handle spin
+{
+  /* <div class="donut"></div> */
+}
+
+function handleSpinner(rootElem, state = false) {
+  if (state) {
+    rootElem.innerHTML = '';
+    rootElem.innerHTML = `<div class="donut"></div>`;
+  }
+}
+
 let getData = () => {
   return new Promise((res, rej) => {
     fetch('https://www.anapioficeandfire.com/api/books')
@@ -59,6 +71,7 @@ function handleCrossEvent(event) {
 function handleInfo(event, element) {
   mainSec.classList.toggle('none');
   secSec.classList.toggle('none');
+
   element.characters.forEach((e) => {
     let div = Promise.all([createRootSecUI(e)]);
     div.then((val) => {
@@ -78,17 +91,22 @@ function handleInfo(event, element) {
 // main  ui function
 
 function createMainUI() {
-  getData().then((val) => {
-    root.innerHTML = '';
-    root2.innerHTML = '';
-    val.forEach((element) => {
-      let card = createCardUI(element);
-      let a = card.querySelector('.btn');
-      a.addEventListener('click', (event) => {
-        handleInfo(event, element);
+  handleSpinner(root, true);
+  getData()
+    .then((val) => {
+      root.innerHTML = '';
+      root2.innerHTML = '';
+      val.forEach((element) => {
+        let card = createCardUI(element);
+        let a = card.querySelector('.btn');
+        a.addEventListener('click', (event) => {
+          handleInfo(event, element);
+        });
+        root.append(card);
       });
-      root.append(card);
+    })
+    .finally(() => {
+      handleSpinner(root);
     });
-  });
 }
 createMainUI();
